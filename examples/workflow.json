@@ -1,0 +1,36 @@
+{
+  "events": [
+    {
+      "id": "demo-review-01",
+      "at": "2026-11-25T09:23:00+08:00",
+      "source": "github",
+      "title": "审查示例项目的文档改动",
+      "route": "dispatched",
+      "agent": "REVIEWER",
+      "status": "done",
+      "latencyMs": 2420,
+      "inputTokens": 1200,
+      "outputTokens": 245,
+      "actualUsd": 0.012,
+      "detail": "检查安装步骤与退出说明。"
+    },
+    {
+      "id": "demo-webhook-01",
+      "at": "2026-11-25T09:25:00+08:00",
+      "source": "webhook",
+      "title": "收到示例心跳",
+      "route": "ignored",
+      "status": "ignored"
+    },
+    {
+      "id": "demo-release-01",
+      "at": "2026-11-25T09:32:00+08:00",
+      "source": "deploy",
+      "title": "整理示例发布说明",
+      "route": "dispatched",
+      "agent": "WRITER",
+      "status": "draft",
+      "detail": "记录功能、兼容性与已知限制。"
+    }
+  ]
+}

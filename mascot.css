@@ -1,0 +1,120 @@
+/* Original relay housing shared by the route diagram and workbench header. */
+.relay-orb {
+  --relay-size: clamp(96px, 14vw, 154px);
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  inline-size: var(--relay-size);
+  block-size: var(--relay-size);
+  vertical-align: middle;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.relay-orb__ticks {
+  position: absolute;
+  inset: 1%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 4deg, #bcc2d0 0deg 1.5deg, #eef0f5 1.5deg 2deg, transparent 2deg 8deg);
+  -webkit-mask-image: radial-gradient(closest-side, transparent 83%, #000 83.7% 96%, transparent 97%);
+  mask-image: radial-gradient(closest-side, transparent 83%, #000 83.7% 96%, transparent 97%);
+  opacity: .9;
+}
+
+.relay-orb__case {
+  position: absolute;
+  inset: 18% 16% 19%;
+  overflow: hidden;
+  border-radius: 27% 27% 33% 33% / 26% 26% 31% 31%;
+  transform: rotate(-11deg);
+  background: linear-gradient(140deg, #646c7a, #2a2f39 28%, #14171f 58%, #474d57);
+  box-shadow: 0 5px 9px #21273924, 0 9px 16px #2732441b, inset 0 1px #f9fbff5c;
+}
+
+.relay-orb__seam {
+  position: absolute;
+  inset: 32% -3% -6%;
+  border-radius: 40% 43% 23% 23% / 32% 34% 22% 22%;
+  background:
+    radial-gradient(ellipse at 35% 17%, #fff 2%, #f0f2f7 36%, transparent 68%),
+    linear-gradient(135deg, #c8cfdf, #f0f2f9 42%, #b6bdce 75%, #a1a9be);
+  box-shadow: inset 0 1px #fff, inset 0 -4px 9px #6d799222, 0 -1px 2px #050810a5;
+}
+
+.relay-orb__panel {
+  position: absolute;
+  inset: 49% 15% 29%;
+  display: flex;
+  align-items: center;
+  gap: 10%;
+  padding-inline: 12%;
+  border-radius: 999px;
+  background: linear-gradient(168deg, #1c2636, #313d51 72%, #4e586c);
+  box-shadow: 0 1px 1px #fff, inset 0 2px 4px #0c141e7a;
+}
+
+.relay-orb__panel i {
+  flex: 0 0 15%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #70cfdf;
+}
+
+.relay-orb__panel i:nth-child(2) { background: #f4ba79; }
+
+.relay-orb__panel b {
+  flex: 1;
+  block-size: 36%;
+  border-radius: 999px;
+  background: repeating-linear-gradient(90deg, #a2b1c9 0 12%, transparent 12% 28%);
+  opacity: .6;
+}
+
+.relay-orb--compact { --relay-size: 46px; }
+.relay-orb--compact .relay-orb__ticks { display: none; }
+.relay-orb--compact .relay-orb__case { inset: 7%; transform: rotate(-9deg); }
+
+.relay-orb--active .relay-orb__ticks,
+.is-arrival > .relay-orb .relay-orb__ticks {
+  background: repeating-conic-gradient(from 4deg, #559fc3 0deg 2deg, transparent 2deg 8deg);
+}
+
+.relay-orb--active .relay-orb__panel i:first-child,
+.is-arrival > .relay-orb .relay-orb__panel i:first-child {
+  background: #9ceaf1;
+  animation: relay-indicator 900ms ease-out;
+}
+
+@keyframes relay-indicator {
+  0%, 100% { opacity: 1; }
+  52% { opacity: .35; }
+}
+
+.relay-orb--running .relay-orb__ticks {
+  background: repeating-conic-gradient(from 4deg, #b0bfc9 0deg 1.7deg, transparent 1.7deg 8deg);
+}
+.relay-orb--running .relay-orb__ticks::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 8deg, transparent, #4aab9b 72deg, #b7e8dd 91deg, transparent 115deg);
+  animation: relay-sweep 3s linear infinite;
+  animation-delay: var(--flow-clock, 0ms);
+  animation-play-state: paused;
+}
+.is-visible .relay-orb--running .relay-orb__ticks::after { animation-play-state: running; }
+.relay-state:is([data-activity="waiting-reply"], [data-activity="waiting-followup"]) + .router .relay-orb__ticks::after {
+  background: conic-gradient(from 8deg, transparent, #bc8a45 72deg, #f2d6a4 91deg, transparent 115deg);
+  animation-duration: 4.4s;
+}
+@keyframes relay-sweep { to { transform: rotate(1turn); } }
+.relay-state[data-activity="completion-unconfirmed"] + .router .relay-orb__ticks::after {
+  background: conic-gradient(from 8deg, transparent, #9c87ad 72deg, #d4c4de 91deg, transparent 115deg);
+  animation-duration: 4.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .relay-orb__panel i { animation: none !important; }
+  .relay-orb--running .relay-orb__ticks::after { animation: none; }
+}

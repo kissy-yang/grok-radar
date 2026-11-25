@@ -1,0 +1,16 @@
+name: 提出建议 / Feature request
+description: 描述你想改进的工作流程 / Suggest a workflow improvement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你的使用场景 / Use case
+      description: 你遇到了什么问题？现在是怎么处理的？
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: 希望的行为 / Desired behavior
+    validations:
+      required: true

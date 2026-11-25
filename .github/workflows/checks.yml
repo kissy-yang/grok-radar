@@ -1,0 +1,35 @@
+name: Checks
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          package-manager-cache: false
+      - name: Run JavaScript tests
+        run: node --test *.test.mjs
+      - name: Run Swift tests
+        run: |
+          xcrun --sdk macosx swiftc -parse-as-library -module-cache-path "$RUNNER_TEMP/module-cache" \
+            mac/GrokLocalSource.swift mac/WorkbenchConnection.swift mac/GrokLocalSourceTests.swift \
+            -o "$RUNNER_TEMP/native-tests"
+          "$RUNNER_TEMP/native-tests"
+      - name: Build and verify the Mac app
+        run: |
+          plutil -lint mac/Info.plist
+          bash mac/build.sh "$RUNNER_TEMP/Grok Radar.app"
+          codesign --verify --deep --strict "$RUNNER_TEMP/Grok Radar.app"

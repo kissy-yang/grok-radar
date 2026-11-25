@@ -1,0 +1,26 @@
+name: 报告问题 / Bug report
+description: 报告一个可复现的问题 / Report a reproducible problem
+body:
+  - type: markdown
+    attributes:
+      value: 请使用合成示例，隐去账号、会话正文、个人路径和凭证。涉及数据泄露的情况请参考仓库的 SECURITY.md。
+  - type: input
+    id: versions
+    attributes:
+      label: 版本与环境 / Versions and environment
+      placeholder: Grok Radar 版本、macOS 版本、Grok Bot 版本（如相关）
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤 / Steps to reproduce
+      description: 如果问题涉及实时状态，请说明辅助功能授权是否打开，以及官方客户端窗口和侧栏是否可见。
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 预期与实际 / Expected and actual behavior
+    validations:
+      required: true
