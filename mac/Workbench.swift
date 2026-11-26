@@ -13,6 +13,7 @@ private final class WorkbenchAssets: NSObject, WKURLSchemeHandler {
         "/style.css": "text/css",
         "/mascot.css": "text/css",
         "/app.mjs": "text/javascript",
+        "/weekly-quota.mjs": "text/javascript",
         "/data.mjs": "text/javascript",
         "/event-store.mjs": "text/javascript",
         "/i18n.mjs": "text/javascript",

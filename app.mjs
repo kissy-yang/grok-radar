@@ -5,6 +5,7 @@ import {createEventStore, mergeEventLog, formatHandoff} from './event-store.mjs'
 import {createRoutingControls} from './routing-controls.mjs';
 import {routingEventDetail} from './routing.mjs';
 import {currentLanguage, localizeDocument, setLanguage, tr} from './i18n.mjs';
+import {summarizeWeeklyQuota} from './weekly-quota.mjs';
 
 const byId = (id) => document.getElementById(id);
 const languageKey = 'grok-radar-language';
@@ -29,6 +30,7 @@ function setFormatters() {
     time: new Intl.DateTimeFormat(locale, hoursAndMinutes),
     checkedTime: new Intl.DateTimeFormat(locale, {...hoursAndMinutes, second: '2-digit'}),
     dayTime: new Intl.DateTimeFormat(locale, {month: '2-digit', day: '2-digit', ...hoursAndMinutes}),
+    weekdayTime: new Intl.DateTimeFormat(locale, {weekday: 'short', ...hoursAndMinutes}),
     fullTime: new Intl.DateTimeFormat(locale, {dateStyle: 'long', timeStyle: 'medium'}),
   };
 }
@@ -379,24 +381,82 @@ function tickBars(rows, segments = 10) {
   return counts.map((hits) => `<i style="--height:${hits ? (18 + hits / peak * 82).toFixed(0) : '10'}%"${hits ? '' : ' class="quiet"'}></i>`).join('');
 }
 
-function renderQuota() {
-  byId('weekly-quota').hidden = !native;
-  const quota = local.status === 'connected' ? local.weeklyQuota : null;
-  const remaining = quota?.remainingPercent;
-  const updatedAt = Date.parse(quota?.updatedAt);
-  const resetAt = Date.parse(quota?.resetAt);
-  const hasQuota = Number.isFinite(remaining) && remaining >= 0 && remaining <= 100 && Number.isFinite(updatedAt) &&
-    (!Number.isFinite(resetAt) || resetAt > Date.parse(local.checkedAt));
-  const meter = byId('weekly-quota-meter');
-  const timing = byId('weekly-quota-time');
-  meter.hidden = timing.hidden = !hasQuota;
-  byId('weekly-quota-value').textContent = hasQuota ? tr(`剩余 ${formatters.percent.format(remaining)}%`, `${formatters.percent.format(remaining)}% remaining`) : tr('暂未同步', "Not synced");
-  if (hasQuota) {
-    meter.value = remaining;
-    meter.dataset.low = String(remaining < 15);
-    timing.textContent = [Number.isFinite(resetAt) ? tr(`${optionalDate(quota.resetAt)} 重置`, `Resets ${optionalDate(quota.resetAt)}`) : '',
-      tr(`更新于 ${optionalDate(quota.updatedAt)}`, `Updated ${optionalDate(quota.updatedAt)}`)].filter(Boolean).join(' · ');
+function quotaDuration(milliseconds) {
+  const minutes = Math.ceil(milliseconds / 60_000);
+  const days = Math.floor(minutes / 1440);
+  const hours = Math.floor(minutes / 60) % 24;
+  const remainder = minutes % 60;
+  const parts = [
+    days && tr(`${count(days)} 天`, `${count(days)}d`),
+    hours && tr(`${count(hours)} 小时`, `${count(hours)}h`),
+    !days && remainder && tr(`${count(remainder)} 分钟`, `${count(remainder)}m`),
+  ];
+  return parts.filter(Boolean).join(' ');
+}
+
+function quotaForecast(quota) {
+  switch (quota.forecast) {
+    case 'depleted': return tr('本周额度已用完', 'Weekly quota used up');
+    case 'until-reset': return tr('预计够用到重置', 'On track until reset');
+    case 'outdated': return tr('等额度更新后再估算', 'Waiting for newer quota data');
+    case 'estimate': {
+      const left = quotaDuration(quota.estimatedMs);
+      return tr(`约 ${left}后用完`, `About ${left} left at this pace`);
+    }
+    default: return '—';
   }
+}
+
+function renderQuota() {
+  const card = byId('weekly-quota');
+  card.hidden = !native;
+  if (!native) return;
+  const checkedAt = Date.parse(local.checkedAt);
+  const quota = local.status === 'connected' ?
+    summarizeWeeklyQuota(local.weeklyQuota, Number.isFinite(checkedAt) ? checkedAt : Date.now()) : null;
+  const timing = byId('weekly-quota-time');
+  byId('weekly-quota-body').hidden = timing.hidden = !quota;
+  byId('weekly-quota-empty').hidden = !!quota;
+  if (!quota) return;
+
+  const meter = byId('weekly-quota-meter');
+  meter.setAttribute('aria-valuenow', String(quota.remainingPercent));
+  meter.style.setProperty('--quota-fill', `${quota.remainingPercent * 2.7}deg`);
+  meter.dataset.low = String(quota.remainingPercent < 15);
+  const remaining = formatters.percent.format(quota.remainingPercent);
+  byId('weekly-quota-value').textContent = remaining;
+  const countdown = byId('weekly-quota-countdown');
+  countdown.hidden = quota.untilResetMs === null;
+  const balance = tr(`剩余 ${remaining}%`, `${remaining}% remaining`);
+  if (!countdown.hidden) {
+    const left = quotaDuration(quota.untilResetMs);
+    countdown.textContent = tr(`${left}后重置`, `Reset in ${left}`);
+  }
+  meter.setAttribute('aria-valuetext', countdown.hidden ? balance : `${balance}${tr('，', ', ')}${countdown.textContent}`);
+
+  const marker = byId('weekly-quota-marker');
+  marker.hidden = quota.expectedRemainingPercent === null;
+  if (!marker.hidden) {
+    marker.style.setProperty('--quota-marker-angle', `${225 + quota.expectedRemainingPercent * 2.7}deg`);
+    const expected = formatters.percent.format(quota.expectedRemainingPercent);
+    marker.title = tr(`按均匀预算，此时应剩 ${expected}%`, `Even budget at the last update: ${expected}% remaining`);
+  }
+  const pace = quota.pacePercent;
+  const badge = byId('weekly-quota-pace-badge');
+  badge.hidden = pace === null;
+  badge.dataset.tone = pace > 100 ? 'warning' : '';
+  badge.textContent = pace > 100 ? tr('偏快', 'Fast') : pace === 100 ? tr('持平', 'On pace') : tr('偏慢', 'Slow');
+  byId('weekly-quota-pace').textContent = pace === null ? '—' : pace > 999 ? '>999%' : `${count(pace)}%`;
+
+  const reset = byId('weekly-quota-reset');
+  reset.textContent = quota.resetAt === null ? '—' : formatters.weekdayTime.format(quota.resetAt);
+  reset.title = quota.resetAt === null ? '' : formatters.fullTime.format(quota.resetAt);
+  reset.dataset.tone = quota.resetAt === null ? 'muted' : '';
+  const forecast = byId('weekly-quota-forecast');
+  forecast.textContent = quotaForecast(quota);
+  forecast.dataset.tone = ['estimate', 'depleted'].includes(quota.forecast) ? 'warning' : 'muted';
+  const updated = formatters.dayTime.format(quota.updatedAt);
+  timing.textContent = tr(`更新于 ${updated}`, `Updated ${updated}`);
 }
 
 function renderMetrics(items) {

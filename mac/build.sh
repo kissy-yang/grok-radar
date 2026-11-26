@@ -57,7 +57,7 @@ resources="$dest/Resources/Workbench"
 mkdir -p -- "$dest/MacOS" "$resources"
 cp -- "$mac_dir/Info.plist" "$dest/Info.plist"
 cp -- "$mac_dir/Workbench.icns" "$dest/Resources/Workbench.icns"
-for asset in index.html style.css mascot.css app.mjs data.mjs i18n.mjs otlp.mjs live-updates.mjs routing.mjs routing-controls.mjs event-store.mjs; do
+for asset in index.html style.css mascot.css app.mjs data.mjs i18n.mjs otlp.mjs live-updates.mjs routing.mjs routing-controls.mjs event-store.mjs weekly-quota.mjs; do
     cp -- "$project_dir/$asset" "$resources/$asset"
 done
 

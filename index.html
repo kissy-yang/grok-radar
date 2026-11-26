@@ -62,20 +62,42 @@
     </p>
     <section class="board-heading" aria-labelledby="overview-heading">
       <div class="intro">
-        <span class="board-emblem" id="board-emblem"></span>
-        <div class="board-title">
-          <h1 id="overview-heading">Grok Radar</h1>
-          <div class="summary-actions">
-            <span id="dataset" class="dataset" role="status"><span class="dataset-dot"></span><span id="dataset-label" data-en="Checking connection">正在核对连接</span></span>
-            <p id="overview-copy"></p><span id="board-timeline" class="board-timeline" aria-hidden="true"></span>
+        <div class="board-brand">
+          <span class="board-emblem" id="board-emblem"></span>
+          <div class="board-title">
+            <h1 id="overview-heading">Grok Radar</h1>
+            <div class="summary-actions">
+              <span id="dataset" class="dataset" role="status"><span class="dataset-dot"></span><span id="dataset-label" data-en="Checking connection">正在核对连接</span></span>
+              <p id="overview-copy"></p><span id="board-timeline" class="board-timeline" aria-hidden="true"></span>
+            </div>
           </div>
-          <section id="weekly-quota" class="weekly-quota" aria-labelledby="weekly-quota-label" hidden>
-            <div class="quota-line"><span id="weekly-quota-label" data-en="Weekly quota">本周额度</span><strong id="weekly-quota-value" data-en="Unavailable">暂未同步</strong></div>
-            <meter id="weekly-quota-meter" min="0" max="100" aria-label="本周剩余额度" data-en-aria-label="Remaining weekly quota" hidden></meter>
-            <div class="quota-foot"><small id="weekly-quota-time" hidden></small><button type="button" id="official-usage" class="quota-link" data-en="Official usage">官方用量</button></div>
-            <small id="official-usage-error" role="status" hidden></small>
-          </section>
         </div>
+        <section id="weekly-quota" class="weekly-quota" aria-labelledby="weekly-quota-label" hidden>
+          <header class="quota-heading">
+            <h2 id="weekly-quota-label" data-en="Weekly quota">本周额度</h2>
+            <button type="button" id="official-usage" class="quota-link"><span data-en="Official usage">官方用量</span><svg aria-hidden="true"><use href="#i-chevron"></use></svg></button>
+          </header>
+          <div class="quota-body" id="weekly-quota-body" hidden>
+            <div id="weekly-quota-meter" class="quota-gauge" role="meter" aria-valuemin="0" aria-valuemax="100"
+                 aria-label="本周剩余额度" data-en-aria-label="Remaining weekly quota">
+              <span class="quota-arc" aria-hidden="true"></span>
+              <span class="quota-marker" id="weekly-quota-marker" aria-hidden="true" hidden></span>
+              <span class="quota-gauge-label" aria-hidden="true"><strong><span id="weekly-quota-value"></span><small>%</small></strong>
+                <span data-en="Remaining">剩余</span>
+                <small class="quota-countdown" id="weekly-quota-countdown" hidden></small>
+              </span>
+            </div>
+            <dl class="quota-details">
+              <div><dt data-en="Pace" title="按本周截至上次更新的平均用量与均匀预算比较" data-en-title="Compares average use so far this week with an even weekly budget">配速</dt>
+                <dd><span class="quota-pace-badge" id="weekly-quota-pace-badge" hidden></span><strong id="weekly-quota-pace">—</strong></dd></div>
+              <div><dt data-en="Reset">重置</dt><dd id="weekly-quota-reset">—</dd></div>
+              <div><dt data-en="Estimate" title="按 7 天周期内的平均用量估算，手动重置或用量变化会影响结果" data-en-title="Based on average use over the current 7-day period. Manual resets or changes in usage can affect the estimate.">预计</dt><dd id="weekly-quota-forecast">—</dd></div>
+            </dl>
+          </div>
+          <p id="weekly-quota-empty" class="quota-empty" data-en="Waiting for quota data from Grok Bot.">等待 Grok Bot 同步额度。</p>
+          <small id="weekly-quota-time" class="quota-updated" hidden></small>
+          <small id="official-usage-error" role="status" hidden></small>
+        </section>
       </div>
       <section id="metrics" class="metrics" aria-label="运行指标" data-en-aria-label="Activity metrics"></section>
     </section>
