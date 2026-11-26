@@ -84,13 +84,16 @@
               <span class="quota-marker" id="weekly-quota-marker" aria-hidden="true" hidden></span>
               <span class="quota-gauge-label" aria-hidden="true"><strong><span id="weekly-quota-value"></span><small>%</small></strong>
                 <span data-en="Remaining">剩余</span>
-                <small class="quota-countdown" id="weekly-quota-countdown" hidden></small>
               </span>
             </div>
             <dl class="quota-details">
               <div><dt data-en="Pace" title="按本周截至上次更新的平均用量与均匀预算比较" data-en-title="Compares average use so far this week with an even weekly budget">配速</dt>
                 <dd><span class="quota-pace-badge" id="weekly-quota-pace-badge" hidden></span><strong id="weekly-quota-pace">—</strong></dd></div>
-              <div><dt data-en="Reset">重置</dt><dd id="weekly-quota-reset">—</dd></div>
+              <div>
+                <dt data-en="Reset">重置</dt>
+                <dd id="weekly-quota-reset">—</dd>
+                <dd id="weekly-quota-countdown" class="quota-countdown" aria-hidden="true" hidden></dd>
+              </div>
               <div><dt data-en="Estimate" title="按 7 天周期内的平均用量估算，手动重置或用量变化会影响结果" data-en-title="Based on average use over the current 7-day period. Manual resets or changes in usage can affect the estimate.">预计</dt><dd id="weekly-quota-forecast">—</dd></div>
             </dl>
           </div>

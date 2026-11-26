@@ -365,14 +365,14 @@ body {
 .quota-gauge-label { display: grid; justify-items: center; color: var(--muted); font-size: 11px; line-height: 1.35; }
 .quota-gauge-label strong { display: block; color: var(--quota-ink); font-size: clamp(24px, 2.8vw, 32px); line-height: 1.15; letter-spacing: -.035em; }
 .quota-gauge-label small { margin-inline-start: 2px; font-size: 13px; letter-spacing: normal; }
-.quota-gauge-label .quota-countdown { margin: 2px 0 0; font-size: 10px; }
 .quota-details { margin: 0; min-width: 0; }
-.quota-details > div { display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: baseline; gap: 8px; padding-block: 6px; }
+.quota-details > div { display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: baseline; gap: 1px 8px; padding-block: 6px; }
 .quota-details > div + div { border-top: 1px solid var(--soft-line); }
 .quota-details dt { color: var(--muted); }
 .quota-details dd { margin: 0; min-width: 0; text-align: end; overflow-wrap: anywhere; color: var(--ink); font-weight: 640; }
 .quota-details dd[data-tone="warning"] { color: #935518; }
 .quota-details dd[data-tone="muted"] { color: var(--muted); font-weight: 500; }
+.quota-details .quota-countdown { grid-column: 2; color: var(--muted); font-size: 11px; font-weight: 500; }
 .quota-pace-badge { display: inline-block; margin-inline-end: 5px; padding: 1px 6px; border-radius: var(--control-radius); background: #e9f4f0; color: #246550; font-size: 11px; }
 .quota-pace-badge[data-tone="warning"] { background: #fbefdd; color: #8a4d13; }
 .quota-updated { border-top: 1px solid var(--soft-line); padding-top: 5px; color: var(--muted); font-size: 11px; }
